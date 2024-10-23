@@ -5,7 +5,6 @@ using Unity.Mathematics;
 using UnityEngine;
 
 using static Unity.Mathematics.math;
-using float4x4 = Unity.Mathematics.float4x4;
 using quaternion = Unity.Mathematics.quaternion;
 
 public class Fractal : MonoBehaviour
@@ -28,8 +27,9 @@ public class Fractal : MonoBehaviour
             FractalPart parent = parents[i / 5];
             FractalPart part = parts[i];
             part.spinAngle += spinAngleDelta;
-            part.worldRotation =
-                mul(part.rotation, quaternion.RotateY(part.spinAngle));
+            part.worldRotation = mul(parent.worldRotation,
+                mul(part.rotation, quaternion.RotateY(part.spinAngle))
+            );
             part.worldPosition =
                 parent.worldPosition +
                 mul(parent.worldRotation, 1.5f * scale * part.direction);
@@ -111,8 +111,9 @@ public class Fractal : MonoBehaviour
         float spinAngleDelta = 0.125f * PI * Time.deltaTime;
         FractalPart rootPart = parts[0][0];
         rootPart.spinAngle += spinAngleDelta;
-        rootPart.worldRotation =
-            mul(transform.rotation, mul(rootPart.rotation, quaternion.RotateY(rootPart.spinAngle)));
+        rootPart.worldRotation = mul(transform.rotation,
+            mul(rootPart.rotation, quaternion.RotateY(rootPart.spinAngle))
+        );
         rootPart.worldPosition = transform.position;
         parts[0][0] = rootPart;
         float objectScale = transform.lossyScale.x;
